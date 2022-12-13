@@ -1,39 +1,21 @@
 package graphics;
 
 import java.nio.IntBuffer;
+import math.vector.Vector4f;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
-import math.vector.Vector4f;
+import org.lwjgl.system.MemoryUtil;
 
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 public class Window {
@@ -52,65 +34,25 @@ public class Window {
         this.handle = create();
     }
 
-    private long create() {
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-        long handle = glfwCreateWindow(width, height, title, NULL, NULL);
-        if (handle == NULL) {
-            throw new RuntimeException("Failed to create the GLFW window");
-        }
-
-        glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-                glfwSetWindowShouldClose(window, true);
-        });
-
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1);
-            IntBuffer pHeight = stack.mallocInt(1);
-
-            glfwGetWindowSize(handle, pWidth, pHeight);
-
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-            glfwSetWindowPos(
-                handle,
-                (vidmode.width() - pWidth.get(0)) / 2,
-                (vidmode.height() - pHeight.get(0)) / 2
-            );
-        }
-
-        glfwMakeContextCurrent(handle);
-        setUseVSync(false);
-
-        GL.createCapabilities();
-        setBackgroundColor(backgroundColor);
-
-        glfwShowWindow(handle);
-        return handle;
-    }
-
     public void update() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glfwSwapBuffers(handle);
-        glfwPollEvents();
+        GLFW.glfwSwapBuffers(handle);
+        GLFW.glfwPollEvents();
     }
 
     public void destroy() {
-        glfwFreeCallbacks(handle);
-        glfwDestroyWindow(handle);
+        Callbacks.glfwFreeCallbacks(handle);
+        GLFW.glfwDestroyWindow(handle);
     }
 
     public void setTitle(String title) {
         this.title = title;
-        glfwSetWindowTitle(handle, title);
+        GLFW.glfwSetWindowTitle(handle, title);
     }
 
     public void setBackgroundColor(Vector4f backgroundColor) {
         this.backgroundColor = backgroundColor;
 
-        glClearColor(
+        GL11.glClearColor(
             backgroundColor.getX(),
             backgroundColor.getY(),
             backgroundColor.getX(),
@@ -119,6 +61,45 @@ public class Window {
     }
 
     public void setUseVSync(boolean enabled) {
-        glfwSwapInterval(enabled ? 1 : 0);
+        GLFW.glfwSwapInterval(enabled ? 1 : 0);
+    }
+
+    private long create() {
+        GLFW.glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        GLFW.glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+        long handle = GLFW.glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL);
+        if (handle == MemoryUtil.NULL) {
+            throw new RuntimeException("Failed to create the GLFW window");
+        }
+
+        GLFW.glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+                GLFW.glfwSetWindowShouldClose(window, true);
+        });
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer pWidth = stack.mallocInt(1);
+            IntBuffer pHeight = stack.mallocInt(1);
+
+            GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
+
+            GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+
+            GLFW.glfwSetWindowPos(
+                handle,
+                (vidmode.width() - pWidth.get(0)) / 2,
+                (vidmode.height() - pHeight.get(0)) / 2
+            );
+        }
+
+        GLFW.glfwMakeContextCurrent(handle);
+        setUseVSync(false);
+
+        GL.createCapabilities();
+        setBackgroundColor(backgroundColor);
+
+        GLFW.glfwShowWindow(handle);
+        return handle;
     }
 }
