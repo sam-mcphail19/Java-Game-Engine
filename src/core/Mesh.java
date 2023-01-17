@@ -1,4 +1,4 @@
-package graphics;
+package core;
 
 import lombok.Getter;
 
@@ -15,14 +15,9 @@ public class Mesh {
         this.texture = texture;
     }
 
-    /*
-    Set texture to placeholder texture
-    public Mesh(Vertex[] vertices, int[] indices) {
+    public Mesh(Vertex[] vertices, Integer[] indices) {
         this.vertices = vertices;
         this.indices = indices;
-        this.texture = texture;
-
-        initBuffers();
+        this.texture = Texture.load("res/placeholder.png");
     }
-    */
 }

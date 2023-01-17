@@ -1,4 +1,4 @@
-package graphics.shader;
+package core.shader;
 
 import lombok.Getter;
 import org.lwjgl.opengl.GL20;

@@ -1,6 +1,7 @@
-package graphics;
+package core;
 
 import java.nio.IntBuffer;
+import math.vector.Vector2f;
 import math.vector.Vector4f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -10,9 +11,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
@@ -35,6 +38,9 @@ public class Window {
     }
 
     public void update() {
+        if (Input.isKeyPressed(GLFW_KEY_ESCAPE)) {
+            GLFW.glfwSetWindowShouldClose(handle, true);
+        }
         GLFW.glfwSwapBuffers(handle);
         GLFW.glfwPollEvents();
     }
@@ -42,6 +48,27 @@ public class Window {
     public void destroy() {
         Callbacks.glfwFreeCallbacks(handle);
         GLFW.glfwDestroyWindow(handle);
+    }
+
+    public void setCursorPos(float x, float y) {
+        GLFW.glfwSetCursorPos(handle, x, y);
+        Input.cursorPosCallback(handle, x, y);
+    }
+
+    public void centerCursor() {
+        setCursorPos(width / 2f, height / 2f);
+    }
+
+    public void centerCursorHorizontally(float y) {
+        setCursorPos(width / 2f, y);
+    }
+
+    public void hideCursor() {
+        GLFW.glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    public void showCursor() {
+        GLFW.glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     public void setTitle(String title) {
@@ -73,10 +100,9 @@ public class Window {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        GLFW.glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-                GLFW.glfwSetWindowShouldClose(window, true);
-        });
+        GLFW.glfwSetKeyCallback(handle, Input::keyCallback);
+        GLFW.glfwSetMouseButtonCallback(handle, Input::mouseButtonCallback);
+        GLFW.glfwSetCursorPosCallback(handle, Input::cursorPosCallback);
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1);
@@ -98,6 +124,8 @@ public class Window {
 
         GL.createCapabilities();
         setBackgroundColor(backgroundColor);
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
 
         GLFW.glfwShowWindow(handle);
         return handle;

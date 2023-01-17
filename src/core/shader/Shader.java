@@ -1,7 +1,8 @@
-package graphics.shader;
+package core.shader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import math.matrix.Mat4f;
 import org.lwjgl.opengl.GL20;
 
 
@@ -39,6 +40,10 @@ public class Shader {
         GL20.glUseProgram(program);
     }
 
+    public void unbind() {
+        GL20.glUseProgram(0);
+    }
+
     public void compileShader() {
         GL20.glLinkProgram(program);
 
@@ -51,6 +56,14 @@ public class Shader {
         if (GL20.glGetProgrami(program, GL20.GL_VALIDATE_STATUS) == 0) {
             throw new RuntimeException(GL20.glGetProgramInfoLog(program, 1024));
         }
+    }
+
+    public void setUniformMat4(String name, Mat4f mat) {
+        GL20.glUniformMatrix4fv(getUniformLocation(name), true, mat.getElements());
+    }
+
+    private int getUniformLocation(String name) {
+        return GL20.glGetUniformLocation(program, name);
     }
 
     private void addProgram(String text, ShaderType type) {

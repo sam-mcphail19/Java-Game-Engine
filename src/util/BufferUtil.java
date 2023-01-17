@@ -1,6 +1,6 @@
 package util;
 
-import graphics.Vertex;
+import core.Vertex;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;

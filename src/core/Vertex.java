@@ -1,4 +1,4 @@
-package graphics;
+package core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

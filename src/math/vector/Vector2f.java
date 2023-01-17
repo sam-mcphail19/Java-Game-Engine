@@ -30,6 +30,10 @@ public class Vector2f {
         return sum;
     }
 
+    public Vector2f copy() {
+        return new Vector2f(x, y);
+    }
+
     @Override
     public String toString() {
         return "Vector2f(" + x + ", " + y + ")";
