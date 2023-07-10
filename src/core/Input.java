@@ -5,7 +5,6 @@ import math.vector.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
-
 public class Input {
     private static final int MAX_KEYS = 1024;
     private static final int MAX_BUTTONS = 32;
@@ -15,7 +14,7 @@ public class Input {
     @Getter
     private static Vector2f mousePos = new Vector2f(0, 0);
 
-    public static boolean  isKeyPressed(int keyCode) {
+    public static boolean isKeyPressed(int keyCode) {
         return keys[keyCode];
     }
 

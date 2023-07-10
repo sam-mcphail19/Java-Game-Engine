@@ -2,12 +2,14 @@ package core.shader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import lombok.Getter;
 import math.matrix.Mat4f;
 import org.lwjgl.opengl.GL20;
 
 
 public class Shader {
     private static final String SHADER_PATH = "res/shader/";
+    public static final String MVP_UNIFORM = "mvp";
 
     private final int program;
 
