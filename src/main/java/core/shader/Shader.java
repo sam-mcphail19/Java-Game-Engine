@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL20;
 
 
 public class Shader {
-    private static final String SHADER_PATH = "res/shader/";
+    private static final String SHADER_PATH = "src/main/resources/shader/";
     public static final String MVP_UNIFORM = "mvp";
 
     private final int program;

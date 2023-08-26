@@ -62,11 +62,17 @@ public class Texture {
         Texture texture = new Texture(textureID);
         textureMap.put(resourcePath, texture);
 
+        texture.unbind();
+
         return texture;
     }
 
     public void bind() {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+    }
+
+    public void unbind() {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 
     private static BufferedImage loadImage(String filePath) {

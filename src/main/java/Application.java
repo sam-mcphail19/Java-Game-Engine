@@ -56,7 +56,7 @@ public class Application {
         shader.setUniformMat4(Shader.MVP_UNIFORM, mvp);
 
         window.update();
-        renderer.update();
+        renderer.render();
 
         shader.unbind();
 
@@ -83,10 +83,6 @@ public class Application {
 
     public boolean shouldClose() {
         return glfwWindowShouldClose(window.handle);
-    }
-
-    public void useWireframe(boolean useWireframe) {
-        renderer.useWireframe(useWireframe);
     }
 
     public void submitMesh(Mesh mesh) {

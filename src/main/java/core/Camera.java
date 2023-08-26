@@ -1,6 +1,7 @@
 package core;
 
 import lombok.Getter;
+import math.Rotation;
 import math.matrix.Mat4f;
 import math.vector.Vector2f;
 import math.vector.Vector3f;
@@ -79,8 +80,8 @@ public class Camera {
     public Mat4f viewMatrix() {
         Mat4f viewMat = Mat4f.identity();
 
-        viewMat.multiply(Mat4f.rotate(-pitch, Vector3f.xAxis()));
-        viewMat.multiply(Mat4f.rotate(-yaw, Vector3f.yAxis()));
+        viewMat.multiply(Mat4f.rotate(new Rotation(-pitch, Vector3f.xAxis())));
+        viewMat.multiply(Mat4f.rotate(new Rotation(-yaw, Vector3f.yAxis())));
         viewMat.multiply(Mat4f.translate(pos.copy().multiply(-1)));
 
         return viewMat;

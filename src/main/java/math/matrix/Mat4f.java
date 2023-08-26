@@ -1,6 +1,7 @@
 package math.matrix;
 
 import lombok.Getter;
+import math.Rotation;
 import math.vector.Vector3f;
 import math.vector.Vector4f;
 
@@ -61,19 +62,19 @@ public class Mat4f {
     }
 
     // TODO Quaternions
-    public static Mat4f rotate(float angle, Vector3f axis) {
+    public static Mat4f rotate(Rotation rotation) {
         Mat4f result = Mat4f.identity();
 
-        double angleInRads = Math.toRadians(angle);
-        axis.normalize();
+        double angleInRads = Math.toRadians(rotation.getAngleDegrees());
+        rotation.getAxis().normalize();
 
         float cos = (float) Math.cos(angleInRads);
         float sin = (float) Math.sin(angleInRads);
         float oneMinusCos = 1 - cos;
 
-        float x = axis.getX();
-        float y = axis.getY();
-        float z = axis.getZ();
+        float x = rotation.getAxis().getX();
+        float y = rotation.getAxis().getY();
+        float z = rotation.getAxis().getZ();
 
         result.setVal(0, 0, x * oneMinusCos + cos);
         result.setVal(0, 1, y * x * oneMinusCos + z * sin);

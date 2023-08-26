@@ -3,7 +3,7 @@ package util;
 import core.Vertex;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
+import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
@@ -20,7 +20,7 @@ public class BufferUtil {
         return GL15.glGenBuffers();
     }
 
-    public static FloatBuffer createFloatBuffer(ArrayList<Vertex> vertices) {
+    public static FloatBuffer createFloatBuffer(List<Vertex> vertices) {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.size() * Vertex.SIZE);
         for (Vertex vertex : vertices) {
             buffer.put(vertex.getPos().getX());
@@ -33,12 +33,11 @@ public class BufferUtil {
         return buffer.flip();
     }
 
-    public static IntBuffer createIntBuffer(ArrayList<Integer> arr) {
-        return MemoryUtil.memAllocInt(arr.size())
-            .put(
-                arr.stream()
-                    .mapToInt(i -> i)
-                    .toArray()
+    public static IntBuffer createIntBuffer(List<Integer> ints) {
+        return MemoryUtil.memAllocInt(ints.size())
+            .put(ints.stream()
+                .mapToInt(i -> i)
+                .toArray()
             ).flip();
     }
 
