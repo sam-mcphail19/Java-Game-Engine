@@ -3,6 +3,7 @@ import core.Mesh;
 import core.Renderer;
 import core.Window;
 import core.shader.Shader;
+import lombok.Getter;
 import math.vector.Vector3;
 import math.vector.Vector4;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -20,6 +21,7 @@ public class Application {
     private final Renderer renderer;
     private final Shader shader;
     private final Window window;
+    @Getter
     private final Camera camera;
 
     private long lastFpsUpdateTime = System.nanoTime();

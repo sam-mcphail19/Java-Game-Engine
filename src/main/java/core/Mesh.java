@@ -48,7 +48,7 @@ public class Mesh {
     }
 
     public Mesh(List<Vertex> vertices, int[] indices, Transform transform) {
-        this(vertices, indices, transform, Texture.load("src/main/resources/placeholder.png"));
+        this(vertices, indices, transform, Texture.load("res/placeholder.png"));
     }
 
     public void render() {
