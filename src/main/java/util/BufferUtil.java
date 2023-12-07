@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-
 public class BufferUtil {
 
     public static int createVao() {
@@ -20,32 +19,25 @@ public class BufferUtil {
         return GL15.glGenBuffers();
     }
 
-    public static FloatBuffer createFloatBuffer(List<Vertex> vertices) {
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.size() * Vertex.SIZE);
-        for (Vertex vertex : vertices) {
-            buffer.put(vertex.getPos().getX());
-            buffer.put(vertex.getPos().getY());
-            buffer.put(vertex.getPos().getZ());
-            buffer.put(vertex.getTexCoord().getX());
-            buffer.put(vertex.getTexCoord().getY());
+    public static float[] createFloatBuffer(List<Vertex> vertices) {
+        float[] buffer = new float[vertices.size() * Vertex.SIZE];
+
+        for (int i = 0; i < vertices.size(); i++) {
+            buffer[i * Vertex.SIZE] = (float) vertices.get(i).getPos().getX();
+            buffer[i * Vertex.SIZE + 1] = (float) vertices.get(i).getPos().getY();
+            buffer[i * Vertex.SIZE + 2] = (float) vertices.get(i).getPos().getZ();
+            buffer[i * Vertex.SIZE + 3] = (float) vertices.get(i).getTexCoord().getX();
+            buffer[i * Vertex.SIZE + 4] = (float) vertices.get(i).getTexCoord().getY();
         }
 
-        return buffer.flip();
+        return buffer;
     }
 
-    public static IntBuffer createIntBuffer(List<Integer> ints) {
-        return MemoryUtil.memAllocInt(ints.size())
-            .put(ints.stream()
-                .mapToInt(i -> i)
-                .toArray()
-            ).flip();
-    }
-
-    public static void bufferVboData(FloatBuffer buffer) {
+    public static void bufferVboData(float[] buffer) {
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
     }
 
-    public static void bufferIboData(IntBuffer buffer) {
+    public static void bufferIboData(int[] buffer) {
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
     }
 }

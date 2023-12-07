@@ -3,10 +3,10 @@ import core.Mesh;
 import core.Renderer;
 import core.Window;
 import core.shader.Shader;
-import math.matrix.Mat4f;
-import math.vector.Vector3f;
-import math.vector.Vector4f;
+import math.vector.Vector3;
+import math.vector.Vector4;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GLUtil;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
@@ -27,17 +27,19 @@ public class Application {
     public Application(String title) {
         this.title = title;
 
-        GLFWErrorCallback.createPrint(System.err).set();
-
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-        window = new Window(1280, 720, title, new Vector4f(0.2f));
+        window = new Window(1280, 720, title, new Vector4(0.2));
+
+        GLFWErrorCallback.createPrint(System.err).set();
+        GLUtil.setupDebugMessageCallback();
+
         renderer = new Renderer();
         shader = new Shader("textured.vsh", "textured.fsh");
         shader.compileShader();
-        camera = new Camera(new Vector3f(0, 0, 1f), 0, 0, window);
+        camera = new Camera(new Vector3(0, 0, 0), 0, 0, window);
     }
 
     public void update() {
@@ -47,16 +49,8 @@ public class Application {
 
         camera.input();
 
-        Mat4f projMat = Mat4f.projection(70f, 16f / 9f, 0.1f, 1000f);
-        Mat4f viewMat = camera.viewMatrix();
-        Mat4f modelMat = Mat4f.identity();
-
-        Mat4f mvp = projMat.multiply(viewMat.multiply(modelMat));
-
-        shader.setUniformMat4(Shader.MVP_UNIFORM, mvp);
-
         window.update();
-        renderer.render();
+        renderer.render(shader, camera, window);
 
         shader.unbind();
 
@@ -82,7 +76,7 @@ public class Application {
     }
 
     public boolean shouldClose() {
-        return glfwWindowShouldClose(window.handle);
+        return glfwWindowShouldClose(window.getHandle());
     }
 
     public void submitMesh(Mesh mesh) {

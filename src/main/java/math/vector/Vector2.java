@@ -6,36 +6,40 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Vector2f {
+public class Vector2 {
 
-    private float x;
-    private float y;
+    private double x;
+    private double y;
 
-    public Vector2f add(Vector2f other) {
+    public Vector2() {
+        this(0, 0);
+    }
+
+    public Vector2 add(Vector2 other) {
         x += other.getX();
         y += other.getY();
         return this;
     }
 
-    public Vector2f subtract(Vector2f other) {
+    public Vector2 subtract(Vector2 other) {
         x -= other.getX();
         y -= other.getY();
         return this;
     }
 
-    public float dot(Vector2f other) {
-        float sum = 0;
+    public double dot(Vector2 other) {
+        double sum = 0;
         sum += x * other.getX();
         sum += y * other.getY();
         return sum;
     }
 
-    public Vector2f copy() {
-        return new Vector2f(x, y);
+    public Vector2 copy() {
+        return new Vector2(x, y);
     }
 
     @Override
     public String toString() {
-        return "Vector2f(" + x + ", " + y + ")";
+        return "Vector2(" + x + ", " + y + ")";
     }
 }

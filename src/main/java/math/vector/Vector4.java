@@ -2,26 +2,24 @@ package math.vector;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import math.matrix.Mat4f;
-
 
 @Data
 @AllArgsConstructor
-public class Vector4f {
+public class Vector4 {
 
-    private float x;
-    private float y;
-    private float z;
-    private float w;
+    private double x;
+    private double y;
+    private double z;
+    private double w;
 
-    public Vector4f(float val) {
+    public Vector4(double val) {
         this.x = val;
         this.y = val;
         this.z = val;
         this.w = val;
     }
 
-    public Vector4f add(Vector4f other) {
+    public Vector4 add(Vector4 other) {
         x += other.getX();
         y += other.getY();
         z += other.getZ();
@@ -29,7 +27,7 @@ public class Vector4f {
         return this;
     }
 
-    public Vector4f subtract(Vector4f other) {
+    public Vector4 subtract(Vector4 other) {
         x -= other.getX();
         y -= other.getY();
         z -= other.getZ();
@@ -37,8 +35,8 @@ public class Vector4f {
         return this;
     }
 
-    public float dot(Vector4f other) {
-        float sum = 0;
+    public double dot(Vector4 other) {
+        double sum = 0;
         sum += x * other.getX();
         sum += y * other.getY();
         sum += z * other.getZ();
@@ -48,6 +46,6 @@ public class Vector4f {
 
     @Override
     public String toString() {
-        return "Vector4f(" + x + ", " + y + ", " + z + ", " + w + ")";
+        return "Vector4(" + x + ", " + y + ", " + z + ", " + w + ")";
     }
 }

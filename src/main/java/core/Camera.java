@@ -1,10 +1,9 @@
 package core;
 
 import lombok.Getter;
-import math.Rotation;
-import math.matrix.Mat4f;
-import math.vector.Vector2f;
-import math.vector.Vector3f;
+import math.matrix.Mat4;
+import math.vector.Vector2;
+import math.vector.Vector3;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
@@ -13,20 +12,21 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 
-
 public class Camera {
-    private static final float MOUSE_SENSITIVITY = 0.5f;
-    private static final float MOVEMENT_SPEED = 0.0001f;
+    private static final double MOUSE_SENSITIVITY = 0.24;
+    private static final double MOVEMENT_SPEED = 0.000000005;
 
     @Getter
-    private Vector3f pos;
-    private float pitch;
-    private float yaw;
-    private Vector3f viewDir;
+    private Vector3 pos;
+    private double pitch;
+    private double yaw;
+    private Vector3 viewDir;
     private Window window;
-    private Vector2f mousePos;
+    private Vector2 mousePos;
 
-    public Camera(Vector3f pos, float pitch, float yaw, Window window) {
+    private long lastUpdateTime = 0;
+
+    public Camera(Vector3 pos, double pitch, double yaw, Window window) {
         this.pos = pos;
         this.pitch = pitch;
         this.yaw = yaw;
@@ -39,66 +39,66 @@ public class Camera {
     }
 
     public void input() {
-        float oldY = mousePos.getY();
-        float oldX = mousePos.getX();
+        long currentTime = System.nanoTime();
+        long deltaTime = currentTime - lastUpdateTime;
+        lastUpdateTime = currentTime;
+
+        double oldY = mousePos.getY();
+        double oldX = mousePos.getX();
         mousePos = Input.getMousePos().copy();
 
-        float pitch = (mousePos.getY() - oldY) * MOUSE_SENSITIVITY;
+        double pitch = (mousePos.getY() - oldY) * MOUSE_SENSITIVITY;
         pitch = pitch < 90f && pitch > -90f ? pitch : 0;
 
-        float yaw = (mousePos.getX() - oldX) * MOUSE_SENSITIVITY;
+        double yaw = (mousePos.getX() - oldX) * MOUSE_SENSITIVITY;
 
         addPitch(pitch);
         addYaw(yaw);
 
         viewDir = calculateViewDirection();
-        Vector3f strafeDir = calculateStrafeDirection();
+        Vector3 strafeDir = calculateStrafeDirection();
 
-        Vector3f movement = new Vector3f(0f);
+        Vector3 movement = new Vector3();
         if (Input.isKeyPressed(GLFW_KEY_W)) {
-            movement.add(viewDir);
+            movement = movement.add(viewDir);
         }
         if (Input.isKeyPressed(GLFW_KEY_A)) {
-            movement.add(strafeDir.copy().multiply(-1));
+            movement = movement.add(strafeDir.multiply(-1));
         }
         if (Input.isKeyPressed(GLFW_KEY_S)) {
-            movement.add(viewDir.copy().multiply(-1));
+            movement = movement.add(viewDir.multiply(-1));
         }
         if (Input.isKeyPressed(GLFW_KEY_D)) {
-            movement.add(strafeDir);
+            movement = movement.add(strafeDir);
         }
         if (Input.isKeyPressed(GLFW_KEY_SPACE)) {
-            movement.add(Vector3f.yAxis());
+            movement = movement.add(Vector3.yAxis());
         }
         if (Input.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-            movement.add(Vector3f.yAxis().multiply(-1));
+            movement = movement.add(Vector3.yAxis().multiply(-1));
         }
 
-        move(movement.multiply(MOVEMENT_SPEED));
+        move(movement.multiply(MOVEMENT_SPEED * deltaTime));
     }
 
-    public Mat4f viewMatrix() {
-        Mat4f viewMat = Mat4f.identity();
-
-        viewMat.multiply(Mat4f.rotate(new Rotation(-pitch, Vector3f.xAxis())));
-        viewMat.multiply(Mat4f.rotate(new Rotation(-yaw, Vector3f.yAxis())));
-        viewMat.multiply(Mat4f.translate(pos.copy().multiply(-1)));
-
-        return viewMat;
+    public Mat4 viewMatrix() {
+        return Mat4.xRotation(pitch)
+            .multiply(Mat4.yRotation(yaw))
+            .multiply(Mat4.translate(pos.copy().multiply(-1)));
     }
 
-    public void move(Vector3f vec) {
-        pos.add(vec);
+    public void move(Vector3 vec) {
+        pos = pos.add(vec);
     }
 
-    public void addPitch(float pitch) {
+    public void addPitch(double pitch) {
         this.pitch += pitch;
 
-        this.pitch = Math.max(this.pitch, -90f);
-        this.pitch = Math.min(this.pitch, 90f);
+        this.pitch = Math.max(this.pitch, -90);
+        this.pitch = Math.min(this.pitch, 90);
     }
 
-    public void addYaw(float yaw) {
+    public void addYaw(double yaw) {
         this.yaw += yaw;
 
         if (this.yaw > 360 || this.yaw < -360) {
@@ -107,16 +107,16 @@ public class Camera {
         }
     }
 
-    private Vector3f calculateViewDirection() {
-        return new Vector3f(
-            (float) Math.sin(Math.toRadians(yaw)),
+    private Vector3 calculateViewDirection() {
+        return new Vector3(
+            Math.sin(Math.toRadians(yaw)),
             0,
-            (float) -Math.cos(Math.toRadians(yaw)) // inverted because yaw=0 points towards -z
+            -Math.cos(Math.toRadians(yaw)) // inverted because yaw=0 points towards -z
         );
     }
 
-    private Vector3f calculateStrafeDirection() {
-        return viewDir.cross(Vector3f.yAxis()).normalize();
+    private Vector3 calculateStrafeDirection() {
+        return viewDir.cross(Vector3.yAxis()).normalize();
     }
 
     @Override

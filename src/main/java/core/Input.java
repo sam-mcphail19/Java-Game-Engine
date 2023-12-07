@@ -1,7 +1,7 @@
 package core;
 
 import lombok.Getter;
-import math.vector.Vector2f;
+import math.vector.Vector2;
 
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -12,7 +12,7 @@ public class Input {
     private static boolean[] keys = new boolean[MAX_KEYS];
     private static boolean[] buttons = new boolean[MAX_BUTTONS];
     @Getter
-    private static Vector2f mousePos = new Vector2f(0, 0);
+    private static Vector2 mousePos = new Vector2(0, 0);
 
     public static boolean isKeyPressed(int keyCode) {
         return keys[keyCode];

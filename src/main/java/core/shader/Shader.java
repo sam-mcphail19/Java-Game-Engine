@@ -2,14 +2,14 @@ package core.shader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import lombok.Getter;
-import math.matrix.Mat4f;
+import math.matrix.Mat4;
 import org.lwjgl.opengl.GL20;
 
 
 public class Shader {
     private static final String SHADER_PATH = "src/main/resources/shader/";
     public static final String MVP_UNIFORM = "mvp";
+    public static final String MODEL_UNIFORM = "model";
 
     private final int program;
 
@@ -60,8 +60,8 @@ public class Shader {
         }
     }
 
-    public void setUniformMat4(String name, Mat4f mat) {
-        GL20.glUniformMatrix4fv(getUniformLocation(name), true, mat.getElements());
+    public void setUniformMat4(String name, Mat4 mat) {
+        GL20.glUniformMatrix4fv(getUniformLocation(name), true, mat.getElementsAsF());
     }
 
     private int getUniformLocation(String name) {

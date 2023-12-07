@@ -10,15 +10,19 @@ import util.BufferUtil;
 
 @Getter
 public class Mesh {
+    private static final int FLOAT_SIZE_IN_BYTES = 4;
+    private static final int POS_SIZE = 3;
+    private static final int UV_SIZE = 2;
+
     private final int vao;
     private final int ibo;
     private final int vbo;
     private final List<Vertex> vertices;
-    private final List<Integer> indices;
+    private final int[] indices;
     private final Texture texture;
     private final Transform transform;
 
-    public Mesh(List<Vertex> vertices, List<Integer> indices, Transform transform, Texture texture) {
+    public Mesh(List<Vertex> vertices, int[] indices, Transform transform, Texture texture) {
         this.vertices = vertices;
         this.indices = indices;
         this.transform = transform;
@@ -34,18 +38,26 @@ public class Mesh {
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
 
-        GL20.glVertexAttribPointer(0, 3, GL20.GL_FLOAT, false, Vertex.SIZE * 4, 0);
-        GL20.glVertexAttribPointer(1, 2, GL20.GL_FLOAT, false, Vertex.SIZE * 4, 3 * 4);
+        // Position (x, y, z)
+        GL20.glVertexAttribPointer(0, POS_SIZE, GL20.GL_FLOAT, false, Vertex.SIZE * FLOAT_SIZE_IN_BYTES, 0);
+        // UVs (u, v)
+        GL20.glVertexAttribPointer(1, UV_SIZE, GL20.GL_FLOAT, false, Vertex.SIZE * FLOAT_SIZE_IN_BYTES, POS_SIZE * FLOAT_SIZE_IN_BYTES);
 
         unbindVbo();
         unbindVao();
     }
 
-    public Mesh(List<Vertex> vertices, List<Integer> indices, Transform transform) {
+    public Mesh(List<Vertex> vertices, int[] indices, Transform transform) {
         this(vertices, indices, transform, Texture.load("src/main/resources/placeholder.png"));
     }
 
     public void render() {
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthFunc(GL11.GL_LESS);
+
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glCullFace(GL11.GL_BACK);
+
         bindVbo();
         BufferUtil.bufferVboData(BufferUtil.createFloatBuffer(vertices));
 
@@ -53,7 +65,7 @@ public class Mesh {
 
         bindVao();
         bindIbo();
-        BufferUtil.bufferIboData(BufferUtil.createIntBuffer(indices));
+        BufferUtil.bufferIboData(indices);
 
         draw();
 
@@ -64,12 +76,7 @@ public class Mesh {
     }
 
     private void draw() {
-        applyTransformation();
-        GL11.glDrawElements(GL11.GL_TRIANGLES, indices.size(), GL11.GL_UNSIGNED_INT, 0);
-    }
-
-    private void applyTransformation() {
-        //glTranslate()
+        GL11.glDrawElements(GL11.GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
     }
 
     private void bindVbo() {
