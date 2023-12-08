@@ -45,10 +45,8 @@ public class Mesh {
 
         unbindVbo();
         unbindVao();
-    }
 
-    public Mesh(List<Vertex> vertices, int[] indices, Transform transform) {
-        this(vertices, indices, transform, Texture.load("res/placeholder.png"));
+        updateBuffers();
     }
 
     public void render() {
@@ -59,13 +57,11 @@ public class Mesh {
         GL11.glCullFace(GL11.GL_BACK);
 
         bindVbo();
-        BufferUtil.bufferVboData(BufferUtil.createFloatBuffer(vertices));
 
         texture.bind();
 
         bindVao();
         bindIbo();
-        BufferUtil.bufferIboData(indices);
 
         draw();
 
@@ -77,6 +73,22 @@ public class Mesh {
 
     private void draw() {
         GL11.glDrawElements(GL11.GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+    }
+
+    private void updateBuffers() {
+        bindVbo();
+        BufferUtil.bufferVboData(BufferUtil.createFloatBuffer(vertices));
+
+        texture.bind();
+
+        bindVao();
+        bindIbo();
+        BufferUtil.bufferIboData(indices);
+
+        texture.unbind();
+        unbindVbo();
+        unbindIbo();
+        unbindVao();
     }
 
     private void bindVbo() {

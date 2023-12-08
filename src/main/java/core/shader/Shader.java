@@ -2,6 +2,8 @@ package core.shader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 import math.matrix.Mat4;
 import org.lwjgl.opengl.GL20;
 
@@ -9,6 +11,8 @@ import org.lwjgl.opengl.GL20;
 public class Shader {
     private static final String SHADER_PATH = "res/shader/";
     public static final String MVP_UNIFORM = "mvp";
+
+    private static Map<String, Integer> uniformLocations = new HashMap<>();
 
     private final int program;
 
@@ -64,7 +68,13 @@ public class Shader {
     }
 
     private int getUniformLocation(String name) {
-        return GL20.glGetUniformLocation(program, name);
+        if (uniformLocations.containsKey(name)) {
+            return uniformLocations.get(name);
+        }
+        int location = GL20.glGetUniformLocation(program, name);
+        uniformLocations.put(name, location);
+
+        return location;
     }
 
     private void addProgram(String text, ShaderType type) {
